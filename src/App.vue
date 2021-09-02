@@ -36,43 +36,62 @@ export default {
     toggleAddTask() {
       this.showAddTask = !this.showAddTask;
     },
-    addTask(payload) {
-      this.tasks = [...this.tasks, payload];
+    async addTask(payload) {
+      console.log(JSON.stringify(payload));
+      const res = await fetch("api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      this.tasks = [...this.tasks, data];
     },
-    deleteTask(id) {
+    async deleteTask(id) {
       if (confirm("Are you sure?")) {
-        this.tasks = this.tasks.filter((task) => {
-          return task.id !== id;
+        const res = await fetch(`api/tasks/${id}`, {
+          method: "DELETE",
         });
+
+        res.status === 200
+          ? (this.tasks = this.tasks.filter((task) => task.id !== id))
+          : alert("Error deleting task!");
       }
     },
-    toggleReminder(id) {
+    async toggleReminder(id) {
+      const taskToToggle = await this.fetchTask(id);
+      const updateTask = { ...taskToToggle, reminder: !taskToToggle.reminder };
+      console.log(updateTask);
+
+      const res = await fetch(`api/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateTask),
+      });
+
+      const data = await res.json();
+
       this.tasks = this.tasks.map((task) => {
-        return task.id === id ? { ...task, reminder: !task.reminder } : task;
+        return task.id === id ? { ...task, reminder: data.reminder } : task;
       });
     },
+    async fetchTasks() {
+      const res = await fetch("api/tasks");
+      const data = await res.json();
+      return data;
+    },
+    async fetchTask(id) {
+      const res = await fetch(`api/tasks/${id}`);
+      const data = await res.json();
+      return data;
+    },
   },
-  created() {
-    this.tasks = [
-      {
-        id: 1,
-        task: "Learn Vue 3 Composition API",
-        date: "Sep 5th at 9.30am",
-        reminder: true,
-      },
-      {
-        id: 2,
-        task: "Learn Quasar",
-        date: "Sep 6th at 9.30am",
-        reminder: true,
-      },
-      {
-        id: 3,
-        task: "Fixing hosting email issue",
-        date: "Sep 8th at 9.30am",
-        reminder: false,
-      },
-    ];
+  async created() {
+    this.tasks = await this.fetchTasks();
   },
 };
 </script>
