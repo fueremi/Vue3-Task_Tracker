@@ -5,6 +5,7 @@
       :text="showAddTask ? 'Close' : 'Add Task'"
       @button-click="$emit('toggle-add-task')"
       :color="showAddTask ? 'red' : 'green'"
+      v-show="homePage"
     />
   </header>
 </template>
@@ -20,6 +21,15 @@ export default {
   },
   components: {
     Button,
+  },
+  computed: {
+    homePage() {
+      if (this.$route.path === "/") {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   emits: ["toggle-add-task"],
 };
