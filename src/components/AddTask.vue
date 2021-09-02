@@ -23,35 +23,40 @@
 </template>
 
 <script>
+import { ref } from "vue";
+
 export default {
   name: "AddTask",
-  data() {
-    return {
-      task: "",
-      date: "",
-      reminder: false,
-    };
-  },
-  methods: {
-    onSubmit() {
-      if (!this.task) {
+  setup(props, { emit }) {
+    const task = ref("");
+    const date = ref("");
+    const reminder = ref(false);
+
+    const onSubmit = () => {
+      if (!task.value) {
         alert("Please add a task!");
         return;
       }
 
       const newTask = {
-        // id: Math.floor(Math.random() * 100000),
-        task: this.task,
-        date: this.date,
-        reminder: this.reminder,
+        task: task.value,
+        date: date.value,
+        reminder: reminder.value,
       };
 
-      this.$emit("add-task", newTask);
+      emit("add-task", newTask);
 
-      this.task = "";
-      this.date = "";
-      this.reminder = false;
-    },
+      task.value = "";
+      date.value = "";
+      reminder.value = false;
+    };
+
+    return {
+      task,
+      date,
+      reminder,
+      onSubmit,
+    };
   },
 };
 </script>

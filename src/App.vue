@@ -14,21 +14,25 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
+import { ref } from "vue";
+
 export default {
   name: "App",
   components: {
     Header,
     Footer,
   },
-  data() {
-    return {
-      showAddTask: false,
+  setup() {
+    const showAddTask = ref(false);
+
+    const toggleAddTask = () => {
+      showAddTask.value = !showAddTask.value;
     };
-  },
-  methods: {
-    toggleAddTask() {
-      this.showAddTask = !this.showAddTask;
-    },
+
+    return {
+      showAddTask,
+      toggleAddTask,
+    };
   },
 };
 </script>

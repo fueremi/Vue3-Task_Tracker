@@ -3,7 +3,7 @@
     <h1>{{ text }}</h1>
     <Button
       :text="showAddTask ? 'Close' : 'Add Task'"
-      @button-click="$emit('toggle-add-task')"
+      @button-click="toggleAddTask"
       :color="showAddTask ? 'red' : 'green'"
       v-show="homePage"
     />
@@ -12,6 +12,9 @@
 
 <script>
 import Button from "@/components/Button";
+
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 
 export default {
   name: "Header",
@@ -22,16 +25,26 @@ export default {
   components: {
     Button,
   },
-  computed: {
-    homePage() {
-      if (this.$route.path === "/") {
+  setup(props, { emit }) {
+    const route = useRoute();
+
+    const toggleAddTask = () => {
+      emit("toggle-add-task");
+    };
+
+    const homePage = computed(() => {
+      if (route.path === "/") {
         return true;
       } else {
         return false;
       }
-    },
+    });
+
+    return {
+      homePage,
+      toggleAddTask,
+    };
   },
-  emits: ["toggle-add-task"],
 };
 </script>
 
